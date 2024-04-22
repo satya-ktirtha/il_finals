@@ -15,45 +15,63 @@ public class Player extends Entity {
     }
     
     public PVector velocity;
-    private float speed = 1.5f;
-    
+    private float speed = 3.0f;
     private final float SIZE = 16.0f;
-
-    private State currentState;
+    
+    private ArrayList<Weapon> weapons;
+    
+    private Hitbox hitbox;
     
     private Animation runningAnimation = new Animation(this, new String[] {
                                     "textures/player/player_run_1.png",
                                     "textures/player/player.png"
                                 }, 60);
     private Animation idleAnimation = new Animation(this, new String[] {
-                                    "textures/player/player.png",
-                                    "textures/player/player_idle_1.png"
+                                    "textures/player/player_idle_1.png",
+                                    "textures/player/player.png"
                                 }, 120);
     
     public Player(PVector position) {
         super(position);
         
+        this.weapons = new ArrayList<>();
         this.velocity = new PVector();
-        setTexture(loadImage("player.png"));
+        this.hitbox = new Hitbox(new PVector(-SIZE / 2 + 5, - SIZE / 2 + 1), SIZE / 2 - 1, SIZE - 1);
         
-        currentState = new IdleState();
+        setState(new IdleState());
+    }
+    
+    public ArrayList<Weapon> getWeapons() {
+        return this.weapons;
+    }
+    
+    public float getSize() {
+        return this.SIZE;
+    }
+    
+    public Hitbox getHitbox() {
+        return this.hitbox;
     }
     
     @Override
     public void render() {
-        translate(getPosition().x, getPosition().y, getPosition().z);
-        rotateY(getRotation());
-        noStroke();
-        scale(3);
-        textureMode(NORMAL);
+        translate(getPosition().x, getPosition().y);
+        //rotateY(getRotation());
+        
+        if(getRotation() == -PI) {
+            scale(-3, 3);
+        } else {
+            scale(3);
+        }
         beginShape();
-        currentState.animate();
+        getState().animate();
         texture(getTexture());
-        vertex(-SIZE / 2, -SIZE / 2, 0.0f, 0.0f, 0.0f);
-        vertex( SIZE / 2, -SIZE / 2, 0.0f, 1.0f, 0.0f);
-        vertex( SIZE / 2,  SIZE / 2, 0.0f, 1.0f, 1.0f);
-        vertex(-SIZE / 2,  SIZE / 2, 0.0f, 0.0f, 1.0f);
+        vertex(-SIZE / 2, -SIZE / 2, 0.0f, 0.0f);
+        vertex( SIZE / 2, -SIZE / 2, 1.0f, 0.0f);
+        vertex( SIZE / 2,  SIZE / 2, 1.0f, 1.0f);
+        vertex(-SIZE / 2,  SIZE / 2, 0.0f, 1.0f);
         endShape();
+        this.hitbox.render();
     }
     
     @Override
@@ -66,7 +84,6 @@ public class Player extends Entity {
         }
         
         if(isKeyDown('A')) {
-            setRotation(-PI);
             movement.add(new PVector(-1.0f, 0));
         }
         
@@ -75,19 +92,18 @@ public class Player extends Entity {
         }
         
         if(isKeyDown('D')) {
-            setRotation(0);
             movement.add(new PVector(1.0f, 0));
         }
         
         this.velocity = movement.normalize().mult(speed);
         
         if(this.velocity.mag() != 0) {
-            if(!(currentState instanceof RunningState)) {
-                currentState = new RunningState();
+            if(!(getState() instanceof RunningState)) {
+                setState(new RunningState());
             }
         } else {
-            if(currentState instanceof RunningState) {
-                currentState = new IdleState();
+            if(getState() instanceof RunningState) {
+                setState(new IdleState());
             }
         }
         

@@ -7,27 +7,30 @@ public class Game {
     
     private Cursor cursor;
     private Player player;
+    private Weapon bigGun;
     
-    public Game() {
+    public Game() throws Exception {
         renderer = new Renderer();
         manager = new EntityManager(this);
 
         mouseListeners = new ArrayList<>();
         renderables = new ArrayList<>();
         
-        cursor = (Cursor) manager.create(new Cursor(new PVector(width / 2, height / 2)));
-        player = (Player) manager.create(new Player(new PVector(width / 2, height / 2)));             
+        
+        player = (Player) manager.create(new Player(new PVector(width / 2, height / 2)));
+        cursor = (Cursor) manager.create(new Cursor(new PVector(width / 2, height / 2)));    
+        bigGun = (Weapon) manager.create(new Weapon(new PVector(100, 100, -1), 30, 12, "big.png"));
     }
     
-    public void render() {
-        for(Renderable renderable : renderables) {
+    public void render() throws Exception {
+        for(Renderable renderable : renderables)
             renderer.render(renderable);
-        }
     }
     
-    public void update() {
-        cursor.update();
-        player.update();
+    public void update() throws Exception {
+        for(Renderable renderable : renderables)
+            if(renderable instanceof Entity)
+                ((Entity) renderable).update();
     }
     
     public void onMouseClicked(PVector mousePos) {
@@ -39,7 +42,16 @@ public class Game {
         this.mouseListeners.add(mouseListener);
     }
     
-    public void addRenderable(Renderable renderable) {
+    public void onMouseMoved(PVector mousePos) {
+        for(MouseListener listener : mouseListeners)
+            listener.onMouseMoved(mousePos);
+    }
+
+    public void addBackgroundRenderable(Renderable renderable) {
+        this.renderables.add(0, renderable);
+    }
+    
+    public void addForegroundRenderable(Renderable renderable) {
         this.renderables.add(renderable);
     }
 }
@@ -50,6 +62,10 @@ int recentKeyReleased = '\0';
 
 void mouseClicked() {
     g.onMouseClicked(new PVector(mouseX, mouseY));
+}
+
+void mouseMoved() {
+    g.onMouseMoved(new PVector(mouseX, mouseY));
 }
 
 void keyPressed() {
@@ -66,18 +82,29 @@ boolean isKeyDown(char k) {
 }
 
 void setup() {
-    size(1280, 720, P3D);
-    background(255, 255, 255);
-    
+    size(1280, 720, P2D);
     frameRate(144);
     noCursor();
+    noFill();
+    //noStroke();
+    textureMode(NORMAL);
     
-    g = new Game();
+    try {
+        g = new Game();
+    } catch(Exception e) {
+        e.printStackTrace();
+        exit();
+    }
 }
 
 void draw() {
-    background(255, 255, 255);
-    
-    g.render();
-    g.update();
+    background(200, 200, 200);
+  
+    try {
+        g.render();
+        g.update();
+    } catch(Exception e) {
+        e.printStackTrace();
+        exit();
+    }
 }

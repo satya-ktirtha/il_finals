@@ -11,6 +11,9 @@ public class State {
     }
     
     public void animate() {
+        if(this.animation == null)
+            return;
+            
         this.animation.animate();
     }
 }

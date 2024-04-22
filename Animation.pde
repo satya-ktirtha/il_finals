@@ -18,6 +18,7 @@ class Animation {
     }
     
     public void animate() {
+        
         if(timer == frameLength) {
             timer = 0;
             
