@@ -7,8 +7,8 @@ public class Renderer {
         
         if(obj instanceof Player) {
             push();
-            for(Weapon weapon : ((Player) obj).getWeapons())
-                weapon.render();
+            if(((Player) obj).getWeapon() != null)
+                ((Player) obj).getWeapon().render();
             pop();
         }
     }

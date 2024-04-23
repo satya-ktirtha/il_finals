@@ -33,6 +33,10 @@ public abstract class Entity implements Renderable {
         return this.texture;
     }
     
+    public void flipY() {
+        scale(-1, 1);
+    }
+    
     public void setState(State state) {
         this.currentState = state;
     }

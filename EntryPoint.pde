@@ -19,7 +19,7 @@ public class Game {
         
         player = (Player) manager.create(new Player(new PVector(width / 2, height / 2)));
         cursor = (Cursor) manager.create(new Cursor(new PVector(width / 2, height / 2)));    
-        bigGun = (Weapon) manager.create(new Weapon(new PVector(100, 100, -1), 30, 12, "big.png"));
+        bigGun = (Weapon) manager.create(new BigGun(new PVector(width / 2 - 100, height / 2 + 100)));
     }
     
     public void render() throws Exception {
@@ -31,6 +31,10 @@ public class Game {
         for(Renderable renderable : renderables)
             if(renderable instanceof Entity)
                 ((Entity) renderable).update();
+    }
+    
+    public void removeEntity(Entity e) {
+        renderables.remove(e);
     }
     
     public void onMouseClicked(PVector mousePos) {
@@ -86,7 +90,7 @@ void setup() {
     frameRate(144);
     noCursor();
     noFill();
-    //noStroke();
+    noStroke();
     textureMode(NORMAL);
     
     try {

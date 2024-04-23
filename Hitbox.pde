@@ -23,9 +23,7 @@ public class Hitbox {
     
     public void render() {
         push();
-        strokeWeight(1);
-        stroke(255, 0, 0);
-        translate(position.x, position.y);
+        rectMode(CENTER);
         rect(0, 0, WIDTH, HEIGHT);
         pop();
     }

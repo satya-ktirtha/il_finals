@@ -1,13 +1,24 @@
 public class Cursor extends NonPlayer implements MouseListener {
     
+    private final float SIZE = 16.0f;
+    
     public Cursor(PVector position) {
         super(position);
+        
+        setTexture(loadImage("textures/misc/cursor.png"));
     }
 
     @Override
     public void render() {
         translate(getPosition().x, getPosition().y);
-        circle(0, 0, 10);
+        beginShape();
+        scale(2);
+        texture(getTexture());
+        vertex(-SIZE / 2, -SIZE / 2, 0.0f, 0.0f);
+        vertex( SIZE / 2, -SIZE / 2, 1.0f, 0.0f);
+        vertex( SIZE / 2,  SIZE / 2, 1.0f, 1.0f);
+        vertex(-SIZE / 2,  SIZE / 2, 0.0f, 1.0f);
+        endShape();
     }
     
     @Override

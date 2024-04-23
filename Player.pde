@@ -1,16 +1,49 @@
+interface InputCheck {
+    void checkInput();
+}
+
 public class Player extends Entity {
     
     private class RunningState extends State {
         
-        public RunningState() {
-            super(runningAnimation);
+        public RunningState(Player player) {
+            super(new Animation(player, new String[] {
+                                    "textures/player/player_run_1.png",
+                                    "textures/player/player.png"
+                                }, 60));
         }
     }
     
     private class IdleState extends State {
         
-        public IdleState() {
-            super(idleAnimation);
+        public IdleState(Player player) {
+            super(new Animation(player, new String[] {
+                                    "textures/player/player_idle_1.png",
+                                    "textures/player/player.png"
+                                }, 120));
+        }
+    }
+    
+    private class PickUpAvailableState extends State implements InputCheck{
+        
+        private Player player;
+        private Weapon weapon;
+        
+        public PickUpAvailableState(Player player, Weapon weapon) {
+            super(null);
+            
+            this.player = player;
+            this.weapon = weapon;
+        }
+        
+        @Override
+        public void checkInput() {
+            if(this.player.getWeapon() != null)
+                return;
+            
+            if(isKeyDown('E')) {
+                this.player.pickup(this.weapon);
+            }
         }
     }
     
@@ -18,31 +51,20 @@ public class Player extends Entity {
     private float speed = 3.0f;
     private final float SIZE = 16.0f;
     
-    private ArrayList<Weapon> weapons;
+    private Weapon weapon;
+    
+    private ArrayList<State> substates;
     
     private Hitbox hitbox;
-    
-    private Animation runningAnimation = new Animation(this, new String[] {
-                                    "textures/player/player_run_1.png",
-                                    "textures/player/player.png"
-                                }, 60);
-    private Animation idleAnimation = new Animation(this, new String[] {
-                                    "textures/player/player_idle_1.png",
-                                    "textures/player/player.png"
-                                }, 120);
     
     public Player(PVector position) {
         super(position);
         
-        this.weapons = new ArrayList<>();
         this.velocity = new PVector();
-        this.hitbox = new Hitbox(new PVector(-SIZE / 2 + 5, - SIZE / 2 + 1), SIZE / 2 - 1, SIZE - 1);
+        this.hitbox = new Hitbox(getPosition(), SIZE / 2, SIZE - 3);
+        this.substates = new ArrayList<>();
         
-        setState(new IdleState());
-    }
-    
-    public ArrayList<Weapon> getWeapons() {
-        return this.weapons;
+        setState(new IdleState(this));
     }
     
     public float getSize() {
@@ -53,24 +75,42 @@ public class Player extends Entity {
         return this.hitbox;
     }
     
+    public void pickup(Weapon weapon) {
+        this.weapon = weapon;
+        weapon.grab();
+    }
+    
+    public Weapon getWeapon() {
+        return this.weapon;
+    }
+    
+    public void notifyWeaponPickup(Weapon weapon) {
+        substates.add(new PickUpAvailableState(this, weapon));
+    }
+    
     @Override
     public void render() {
         translate(getPosition().x, getPosition().y);
-        //rotateY(getRotation());
         
         if(getRotation() == -PI) {
-            scale(-3, 3);
-        } else {
-            scale(3);
-        }
+            flipY();
+        } 
         beginShape();
         getState().animate();
+        
+        for(State state : substates) {
+            if(state instanceof InputCheck)
+                ((InputCheck) state).checkInput();
+        }
+        
+        scale(3);
         texture(getTexture());
         vertex(-SIZE / 2, -SIZE / 2, 0.0f, 0.0f);
         vertex( SIZE / 2, -SIZE / 2, 1.0f, 0.0f);
         vertex( SIZE / 2,  SIZE / 2, 1.0f, 1.0f);
         vertex(-SIZE / 2,  SIZE / 2, 0.0f, 1.0f);
         endShape();
+        
         this.hitbox.render();
     }
     
@@ -99,14 +139,15 @@ public class Player extends Entity {
         
         if(this.velocity.mag() != 0) {
             if(!(getState() instanceof RunningState)) {
-                setState(new RunningState());
+                setState(new RunningState(this));
             }
         } else {
             if(getState() instanceof RunningState) {
-                setState(new IdleState());
+                setState(new IdleState(this));
             }
         }
         
         getPosition().add(this.velocity);
+        //getPosition().set(new PVector(mouseX, mouseY));
     }
 }
