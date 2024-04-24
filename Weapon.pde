@@ -26,6 +26,7 @@ public class Weapon extends NonPlayer {
         this.GRABBED_X = grabbedX;
         this.GRABBED_Y = grabbedY;
         
+        setHitbox(new Hitbox(getPosition(), this.WIDTH + 20.0f, this.HEIGHT).withOffset(new PVector(5.0f, 0.0f)));
         this.manager = null;
     }
     
@@ -57,7 +58,6 @@ public class Weapon extends NonPlayer {
                 getPosition().set(getPlayer().getPosition().x + GRABBED_X, getPlayer().getPosition().y + GRABBED_Y);    
                 translate(getPosition().x, getPosition().y);
             }
-            
         }
 
         beginShape();
@@ -73,24 +73,7 @@ public class Weapon extends NonPlayer {
     
     @Override
     public void update() {
-        float xl = getPosition().x - WIDTH;
-        float xr = getPosition().x + WIDTH;
-        float yt = getPosition().y - HEIGHT;
-        float yb = getPosition().y + HEIGHT;
-        
-        float w2 = WIDTH;
-        float h2 = HEIGHT;
-        float px = getPlayer().getHitbox().getPosition().x;
-        float py = getPlayer().getHitbox().getPosition().y;
-        float pw2 = getPlayer().getHitbox().getWidth();
-        float ph2 = getPlayer().getHitbox().getHeight();
-        
-        float pxl = px - pw2;
-        float pxr = px + pw2;
-        float pyt = py - ph2;
-        float pyb = py + ph2;
-
-        if(!(pxl >= xr || pxr <= xl || pyt >= yb || pyb <= yt))
+        if(getPlayer().collidesWith(getHitbox()))
             getPlayer().notifyWeaponPickup(this);
     }
 }

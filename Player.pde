@@ -2,7 +2,7 @@ interface InputCheck {
     void checkInput();
 }
 
-public class Player extends Entity {
+public class Player extends Entity implements Collision2D {
     
     private class RunningState extends State {
         
@@ -21,6 +21,16 @@ public class Player extends Entity {
                                     "textures/player/player_idle_1.png",
                                     "textures/player/player.png"
                                 }, 120));
+        }
+    }
+    
+    private class DamageState extends State {
+            
+        public DamageState(Player player) {
+            super(new Animation(player, new String[] {
+                                    "textures/player/player_damage_1.png",
+                                    "textures/player/player.png"
+                                }, 5).repeat(2).once());
         }
     }
     
@@ -48,33 +58,31 @@ public class Player extends Entity {
     }
     
     public PVector velocity;
+    public PVector acceleration;
     private float speed = 3.0f;
+    private float health = 10.0f;
+    
     private final float SIZE = 16.0f;
     
     private Weapon weapon;
     
     private ArrayList<State> substates;
     
-    private Hitbox hitbox;
-    
     public Player(PVector position) {
         super(position);
         
         this.velocity = new PVector();
-        this.hitbox = new Hitbox(getPosition(), SIZE / 2, SIZE - 3);
+        this.acceleration = new PVector();
         this.substates = new ArrayList<>();
         
+        setHitbox(new Hitbox(getPosition(), SIZE * 1.6, SIZE * 2.4).withOffset(new PVector(0, 1.5f)));
         setState(new IdleState(this));
     }
     
     public float getSize() {
         return this.SIZE;
     }
-    
-    public Hitbox getHitbox() {
-        return this.hitbox;
-    }
-    
+
     public void pickup(Weapon weapon) {
         this.weapon = weapon;
         weapon.grab();
@@ -88,6 +96,25 @@ public class Player extends Entity {
         substates.add(new PickUpAvailableState(this, weapon));
     }
     
+    public void takeDamage(PVector direction, float damage) {
+        if(getState() instanceof DamageState)
+            return;
+        
+        this.health -= damage;
+        
+        this.velocity = direction.copy().normalize();
+        this.acceleration = this.velocity.copy().mult(2.0f);
+        setState(new DamageState(this).after(new IdleState(this)));
+    }
+    
+    @Override
+    public boolean collidesWith(Hitbox hitbox) {
+        if(getState() instanceof DamageState)
+            return false;
+        
+        return rectangleCollision(getHitbox(), hitbox);
+    }
+    
     @Override
     public void render() {
         translate(getPosition().x, getPosition().y);
@@ -96,26 +123,34 @@ public class Player extends Entity {
             flipY();
         } 
         beginShape();
-        getState().animate();
+        
+        if(!getState().animate()) {
+            if(getState().hasNext())
+                setState(getState().getNext());
+        }
         
         for(State state : substates) {
             if(state instanceof InputCheck)
                 ((InputCheck) state).checkInput();
         }
-        
+
         scale(3);
+        
         texture(getTexture());
         vertex(-SIZE / 2, -SIZE / 2, 0.0f, 0.0f);
         vertex( SIZE / 2, -SIZE / 2, 1.0f, 0.0f);
         vertex( SIZE / 2,  SIZE / 2, 1.0f, 1.0f);
         vertex(-SIZE / 2,  SIZE / 2, 0.0f, 1.0f);
         endShape();
-        
-        this.hitbox.render();
     }
     
     @Override
     public void update() {
+        if(getState() instanceof DamageState) {
+            getPosition().add(this.velocity.add(this.acceleration));
+            this.acceleration.mult(0.3);
+            return;
+        }
         
         PVector movement = new PVector();
         
@@ -148,6 +183,5 @@ public class Player extends Entity {
         }
         
         getPosition().add(this.velocity);
-        //getPosition().set(new PVector(mouseX, mouseY));
     }
 }

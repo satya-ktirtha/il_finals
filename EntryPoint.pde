@@ -8,6 +8,14 @@ public class Game {
     private Cursor cursor;
     private Player player;
     private Weapon bigGun;
+    private Grunt grunt1;
+    
+    private final int MAX_GRUNTS = 1;
+    
+    private int grunts;
+    private int boss;
+    
+    private int timer;
     
     public Game() throws Exception {
         renderer = new Renderer();
@@ -16,6 +24,9 @@ public class Game {
         mouseListeners = new ArrayList<>();
         renderables = new ArrayList<>();
         
+        grunts = 0;
+        boss = 0;
+        timer = 0;
         
         player = (Player) manager.create(new Player(new PVector(width / 2, height / 2)));
         cursor = (Cursor) manager.create(new Cursor(new PVector(width / 2, height / 2)));    
@@ -31,6 +42,28 @@ public class Game {
         for(Renderable renderable : renderables)
             if(renderable instanceof Entity)
                 ((Entity) renderable).update();
+                
+        
+        if(grunts < MAX_GRUNTS) {
+            if(timer % 100 == 0) {
+                int xWithinWidth = floor(random(0, 2));
+                float x = xWithinWidth * random(0, width) + (1 - xWithinWidth) * (-20.0f + floor(random(0,2)) * (width + 20.0f));
+                float y = (1 - xWithinWidth) * random(-20.0f, height + 20.0f) + (xWithinWidth) * (-100.0f + floor(random(0,2)) * height + 50.0f);
+                
+                manager.create(new Grunt(new PVector(x, y), false));
+                
+                grunts += 1;
+                
+                if(grunts == MAX_GRUNTS)
+                    timer = 0;
+            }
+        } else if(timer % 1000 == 0 && boss == 0) {
+            manager.create(new Grunt(new PVector(width + 50.0f, height / 2), true));
+            
+            boss += 1;
+        }
+        
+        timer += 1;
     }
     
     public void removeEntity(Entity e) {
@@ -94,6 +127,8 @@ void setup() {
     textureMode(NORMAL);
     
     try {
+        setupConstants();
+        
         g = new Game();
     } catch(Exception e) {
         e.printStackTrace();
@@ -102,7 +137,11 @@ void setup() {
 }
 
 void draw() {
+    if(isKeyDown(' '))
+        return;
+        
     background(200, 200, 200);
+
   
     try {
         g.render();
