@@ -1,4 +1,4 @@
-public class Cursor extends NonPlayer implements MouseListener {
+public class Cursor extends NonPlayer implements MouseListener, Collision2D {
     
     private final float SIZE = 16.0f;
     
@@ -6,6 +6,11 @@ public class Cursor extends NonPlayer implements MouseListener {
         super(position);
         
         setTexture(loadImage("textures/misc/cursor.png"));
+    }
+
+    @Override
+    public boolean collidesWith(Hitbox hitbox) {
+        return pointRectangleCollision(getPosition(), hitbox);    
     }
 
     @Override

@@ -2,6 +2,7 @@ class EntityManager {
     
     private Game game;
     private Player player = null;
+    private Cursor cursor = null;
     
     public EntityManager(Game game) {
         this.game = game;
@@ -24,6 +25,10 @@ class EntityManager {
             return this.player;
         }
         
+        if(obj instanceof Cursor) {
+            this.cursor = (Cursor) obj;
+        }
+        
         if(obj instanceof MouseListener) {
             this.game.addMouseListener((MouseListener) obj);
         }
@@ -41,6 +46,11 @@ class EntityManager {
                 ((Weapon) obj).setEntityManager(this);
             }
                    
+                   
+            if(obj instanceof Enemy) {
+                ((Enemy) obj).setCursor(cursor);
+            }
+            
             if(obj instanceof Cursor) {
                 this.game.addForegroundRenderable((Renderable) obj);
 

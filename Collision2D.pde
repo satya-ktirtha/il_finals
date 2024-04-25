@@ -12,6 +12,18 @@ public boolean rectangleCollision(Hitbox h1, Hitbox h2) {
     return !(pxl >= xr || pxr <= xl || pyt >= yb || pyb <= yt);
 }
 
+public boolean pointRectangleCollision(PVector point, Hitbox h) {
+    float px = point.x;
+    float py = point.y;
+    
+    float hw = h.getWidth();
+    float hh = h.getHeight();
+    float hx = h.getPosition().x;
+    float hy = h.getPosition().y;
+    
+    return px < hx + hw / 2 && px > hx - hw / 2 && py > hy - hh / 2 && py < hy + hh / 2;
+}
+
 interface Collision2D {
     boolean collidesWith(Hitbox hitbox);
 }

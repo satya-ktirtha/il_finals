@@ -9,12 +9,23 @@ public abstract class Enemy extends NonPlayer {
     private PVector velocity;
     private float speed;
     private float touchDamage = 1.0f;
+    private Cursor cursor;
     
     public Enemy(PVector position, float speed) {
         super(position);
         
         this.velocity = new PVector();
         this.speed = speed;
+        
+        this.cursor = null;
+    }
+    
+    public void setCursor(Cursor cursor) {
+        this.cursor = cursor;
+    }
+    
+    public Cursor getCursor() {
+        return this.cursor;
     }
     
     @Override

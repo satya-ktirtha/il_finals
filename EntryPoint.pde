@@ -1,3 +1,5 @@
+import processing.serial.*;
+
 public class Game {
     private ArrayList<MouseListener> mouseListeners;
     private ArrayList<Renderable> renderables;
@@ -10,7 +12,7 @@ public class Game {
     private Weapon bigGun;
     private Grunt grunt1;
     
-    private final int MAX_GRUNTS = 1;
+    private final int MAX_GRUNTS = 0;
     
     private int grunts;
     private int boss;
@@ -93,9 +95,12 @@ public class Game {
     }
 }
     
-Game g;
-boolean[] keys = new boolean[65535];
-int recentKeyReleased = '\0';
+public Game g;
+
+public Serial arduinoPort;
+
+public boolean[] keys = new boolean[65535];
+public int recentKeyReleased = '\0';
 
 void mouseClicked() {
     g.onMouseClicked(new PVector(mouseX, mouseY));
@@ -127,6 +132,7 @@ void setup() {
     textureMode(NORMAL);
     
     try {
+        arduinoPort = new Serial(this, "COM10", 9600);
         setupConstants();
         
         g = new Game();
