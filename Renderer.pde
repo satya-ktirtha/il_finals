@@ -15,6 +15,9 @@ public class Renderer {
         if(obj instanceof Weapon) {
             ((Weapon) obj).getHitbox().render();
         }
+        if(obj instanceof Bullet) {
+            ((Bullet) obj).getHitbox().render();
+        }
         pop();
         
         if(obj instanceof Player) {

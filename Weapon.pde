@@ -1,4 +1,4 @@
-public class Weapon extends NonPlayer {
+public class Weapon extends NonPlayer implements MouseListener {
     
     private class UngrabbedState extends State {
         public UngrabbedState() {
@@ -11,10 +11,11 @@ public class Weapon extends NonPlayer {
     private final float WIDTH;
     private final float HEIGHT;
     private final float GRABBED_X, GRABBED_Y;
+    private final float damage;
     
     private boolean grabbed = false;
     
-    public Weapon(PVector position, float w, float h, String texture, float grabbedX, float grabbedY) {
+    public Weapon(PVector position, float w, float h, String texture, float grabbedX, float grabbedY, float damage) {
         super(position);
         
         setTexture(loadImage("textures/weapons/" + texture));
@@ -25,6 +26,8 @@ public class Weapon extends NonPlayer {
         this.HEIGHT = h;
         this.GRABBED_X = grabbedX;
         this.GRABBED_Y = grabbedY;
+        
+        this.damage = damage;
         
         setHitbox(new Hitbox(getPosition(), this.WIDTH + 20.0f, this.HEIGHT).withOffset(new PVector(5.0f, 0.0f)));
         this.manager = null;
@@ -38,6 +41,24 @@ public class Weapon extends NonPlayer {
     
     public void setEntityManager(EntityManager manager) {
         this.manager = manager;
+    }
+    
+    @Override
+    public void onMouseClicked(PVector mousePos) {
+        if(mouseButton == LEFT && grabbed)
+            this.manager.onShoot(new BananaBullet(getPlayer().getPosition().copy(), mousePos.copy().sub(getPlayer().getPosition().copy()), true, this.damage));
+    }
+    @Override
+    public void onMouseReleased(PVector mousePos) {
+        
+    }
+    @Override
+    public void onMousePressed(PVector mousePos) {
+    }
+    
+    @Override
+    public void onMouseMoved(PVector mousePos) {
+        
     }
     
     @Override

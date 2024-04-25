@@ -8,7 +8,7 @@ public class Grunt extends Enemy {
     private boolean identified = false;
     
     public Grunt(PVector position, boolean isBoss) {
-        super(position, 1.0f);
+        super(position, 1.0f, isBoss ? 10.0f : 5.0f);
         
         setState(new MovingState(this, gruntWalking));
         setHitbox(new Hitbox(getPosition(), 20, 40).withOffset(new PVector(0, HEIGHT - HEIGHT / 1.5)));
@@ -19,6 +19,27 @@ public class Grunt extends Enemy {
             setHitbox(new Hitbox(getPosition(), 40, 100).withOffset(new PVector(0, HEIGHT - HEIGHT / 4.5)));
     }
 
+    public void takeDamage(PVector direction, float damage) {
+        setState(new DamagedState(this, gruntWalking).after(new MovingState(this, gruntWalking)));
+        
+        super.takeDamage(direction.copy(), damage);
+    }
+    
+    public boolean isBoss() {
+        return this.isBoss;
+    }
+
+    @Override
+    public boolean collidesWith(Hitbox hitbox) {
+        if(!isBoss())
+            return rectangleCollision(getHitbox(), hitbox);
+        
+        if(identified)
+            return rectangleCollision(getHitbox(), hitbox);
+        else 
+            return false;
+    }
+
     @Override
     public void update() {
         super.update();
@@ -26,15 +47,14 @@ public class Grunt extends Enemy {
         if(this.isBoss) {
             
             if(this.fullyScanned) {
-                arduinoPort.write("e," + str(100));
+                //arduinoPort.write("e," + str(100));
              
-                if(arduinoPort.available() > 0) {
-                    char deviceDone = arduinoPort.lastChar();
-                    if(deviceDone == '1')
-                        this.identified = true;
-                    
-                }
-                
+                //if(arduinoPort.available() > 0) {
+                //    char deviceDone = arduinoPort.lastChar();
+                //    if(deviceDone == '1')
+                //        this.identified = true;
+                //}
+                this.identified = true;
                 return;
             }
             
@@ -47,10 +67,8 @@ public class Grunt extends Enemy {
                     this.fullyScanned = true;
                 
                 //arduinoPort.write("e," + str(scanProgress));
-                arduinoPort.write("scanning\n");
+                //arduinoPort.write("scanning\n");
             } else {
-                arduinoPort.write("not scanning\n");
-                
                 if(scanProgress > 0)
                     scanProgress -= 1.0f;
             }
@@ -61,6 +79,8 @@ public class Grunt extends Enemy {
     
     @Override
     public void render() {
+        super.render();
+        
         translate(getPosition().x, getPosition().y);
         
         if(getRotation() == -PI) {
@@ -74,9 +94,12 @@ public class Grunt extends Enemy {
         else
             scale(2);
             
-        if(!identified)
-            tint(255, 255, 255, 20);
-        else
+        if(isBoss()) {
+            if(!identified)
+                tint(255, 255, 255, 20);
+            else
+                tint(255, 255, 255, 255);
+        } else
             tint(255, 255, 255, 255);
             
         texture(getTexture());
