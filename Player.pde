@@ -160,7 +160,6 @@ public class Player extends Entity implements Collision2D, NeedsManager {
     public void takeDamage(PVector direction, float damage) {
         if(getState() instanceof DamageState)
             return;
-
         
         this.health -= damage;
         
@@ -230,6 +229,15 @@ public class Player extends Entity implements Collision2D, NeedsManager {
         if(getState() instanceof DamageState) {
             getPosition().add(this.velocity.add(this.acceleration));
             this.acceleration.mult(0.3);
+            
+            if(getPosition().y > height - SIZE / 2 - 20.0f)
+                getPosition().set(new PVector(getPosition().x, SIZE / 2 + 20.0f));
+            if(getPosition().y < -SIZE / 2 - 15.0f)
+                getPosition().set(new PVector(getPosition().x , height - SIZE / 2 - 50.0f));
+            if(getPosition().x < -SIZE / 2 - 5.0f)
+                getPosition().set(new PVector(width - SIZE / 2 - 5.0f, getPosition().y));
+            if(getPosition().x > width + SIZE / 2 + 5.0f)
+                getPosition().set(new PVector(SIZE / 2 + 5.0f, getPosition().y));
                 
             return;
         }
@@ -244,19 +252,19 @@ public class Player extends Entity implements Collision2D, NeedsManager {
         
         PVector movement = new PVector();
         
-        if(isKeyDown('W')) {
+        if(isKeyDown('W') && getPosition().y > + SIZE / 2 + 15.0f) {
             movement.add(new PVector(0, -1.0f));
         }
         
-        if(isKeyDown('A')) {
+        if(isKeyDown('A') && getPosition().x > SIZE / 2 + 5.0f) {
             movement.add(new PVector(-1.0f, 0));
         }
         
-        if(isKeyDown('S')) {
+        if(isKeyDown('S') && getPosition().y < height - SIZE / 2 - 45.0f) {
             movement.add(new PVector(0, 1.0f));
         }
         
-        if(isKeyDown('D')) {
+        if(isKeyDown('D') && getPosition().x < width - SIZE / 2 - 5.0f) {
             movement.add(new PVector(1.0f, 0));
         }
         

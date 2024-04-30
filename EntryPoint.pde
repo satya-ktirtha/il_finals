@@ -12,7 +12,7 @@ public class Game {
     private Player player;
     private Weapon bigGun;
     
-    private final int MAX_GRUNTS = 1;
+    private final int MAX_GRUNTS = 15;
     
     private float currentScaleMultiplier;
     private float currentSpeedMultiplier;
