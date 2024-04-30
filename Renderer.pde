@@ -5,20 +5,20 @@ public class Renderer {
         obj.render();
         pop();
         
-        push();
-        if(obj instanceof Player) {
-            ((Player) obj).getHitbox().render();
-        }
+        //push();
+        //if(obj instanceof Player) {
+        //    ((Player) obj).getHitbox().render();
+        //}
         if(obj instanceof Enemy) {
             ((Enemy) obj).getHitbox().render();
         }
-        if(obj instanceof Weapon) {
-            ((Weapon) obj).getHitbox().render();
-        }
-        if(obj instanceof Bullet) {
-            ((Bullet) obj).getHitbox().render();
-        }
-        pop();
+        //if(obj instanceof Weapon) {
+        //    ((Weapon) obj).getHitbox().render();
+        //}
+        //if(obj instanceof Bullet) {
+        //    ((Bullet) obj).getHitbox().render();
+        //}
+        //pop();
         
         if(obj instanceof Player) {
             push();

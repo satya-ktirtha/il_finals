@@ -1,5 +1,5 @@
 private PImage[] gruntWalking;
-
+private PImage disarmedIcon;
 
 public void setupConstants() {
     gruntWalking = new PImage[]{
@@ -12,4 +12,6 @@ public void setupConstants() {
         loadImage("textures/entities/grunt/moveFX_7.png"),
         loadImage("textures/entities/grunt/moveFX_8.png"),
     };
+    
+    disarmedIcon = loadImage("textures/misc/disarmed.png");
 }

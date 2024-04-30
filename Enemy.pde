@@ -1,4 +1,4 @@
-public abstract class Enemy extends NonPlayer implements Collision2D {
+public abstract class Enemy extends NonPlayer implements Collision2D, NeedsManager {
     
     protected class MovingState extends State {
         public MovingState(Enemy enemy, PImage[] animation) {
@@ -12,27 +12,48 @@ public abstract class Enemy extends NonPlayer implements Collision2D {
         }
     }
     
+    private float scaleMultiplier;
+    private float maxHealth;
+    private float defaultSpeed;
     private float health;
-    private PVector velocity;
     private float speed;
-    private PVector acceleration;
-    private float touchDamage = 1.0f;
-    private Cursor cursor;
+    private float touchDamage;
     
+    private float prevNewMaxHealth;
+    
+    private PVector acceleration;
+    private PVector velocity;
+
+    private Cursor cursor;
     private EntityManager manager;
     
-    public Enemy(PVector position, float speed, float health) {
+    public Enemy(PVector position, float defaultSpeed, float maxHealth) {
         super(position);
         
         this.velocity = new PVector();
-        this.speed = speed;
-        this.health = health;
+        this.defaultSpeed = defaultSpeed;
+        this.speed = this.defaultSpeed;
+        this.maxHealth = maxHealth;
+        this.prevNewMaxHealth = this.maxHealth;
+        this.health = this.maxHealth;
+        this.touchDamage = 1.0f;
+        this.scaleMultiplier = 1.0f;
         
         this.cursor = null;
     }
     
     public void setEntityManager(EntityManager manager) {
         this.manager = manager;
+    }
+    
+    public void setScaleMultiplier(float mult) {
+        this.scaleMultiplier = mult;
+        
+        getHitbox().setScaleMultiplier(mult);
+    }
+    
+    public float getScaleMultiplier() {
+        return this.scaleMultiplier;
     }
     
     public void takeDamage(PVector direction, float damage) {
@@ -48,6 +69,16 @@ public abstract class Enemy extends NonPlayer implements Collision2D {
     
     public Cursor getCursor() {
         return this.cursor;
+    }
+    
+    public void multSpeed(float multiplier) {
+        this.speed = this.defaultSpeed * multiplier;
+        
+        float newMaxHealth = floor(map(this.speed, this.defaultSpeed, this.defaultSpeed * 2.0f, this.maxHealth, 1));
+        if(floor(abs(newMaxHealth - prevNewMaxHealth)) > 0) {
+            this.health = newMaxHealth;
+        }
+        this.prevNewMaxHealth = newMaxHealth;
     }
     
     @Override

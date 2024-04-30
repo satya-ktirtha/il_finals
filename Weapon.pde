@@ -1,4 +1,4 @@
-public class Weapon extends NonPlayer implements MouseListener {
+public class Weapon extends NonPlayer implements MouseListener, NeedsManager {
     
     private class UngrabbedState extends State {
         public UngrabbedState() {
@@ -13,7 +13,8 @@ public class Weapon extends NonPlayer implements MouseListener {
     private final float GRABBED_X, GRABBED_Y;
     private final float damage;
     
-    private boolean grabbed = false;
+    private boolean grabbed;
+    private boolean disabled;
     
     public Weapon(PVector position, float w, float h, String texture, float grabbedX, float grabbedY, float damage) {
         super(position);
@@ -29,8 +30,19 @@ public class Weapon extends NonPlayer implements MouseListener {
         
         this.damage = damage;
         
+        this.grabbed = false;
+        this.disabled = false;
+        
         setHitbox(new Hitbox(getPosition(), this.WIDTH + 20.0f, this.HEIGHT).withOffset(new PVector(5.0f, 0.0f)));
         this.manager = null;
+    }
+    
+    public void disable() {
+        this.disabled = true;
+    }
+    
+    public void enable() {
+        this.disabled = false;
     }
     
     public void grab() {
@@ -45,7 +57,7 @@ public class Weapon extends NonPlayer implements MouseListener {
     
     @Override
     public void onMouseClicked(PVector mousePos) {
-        if(mouseButton == LEFT && grabbed)
+        if(mouseButton == LEFT && grabbed && !disabled)
             this.manager.onShoot(new BananaBullet(getPlayer().getPosition().copy(), mousePos.copy().sub(getPlayer().getPosition().copy()), true, this.damage));
     }
     @Override

@@ -1,2 +1,3 @@
-interface NeedsManager {
+public interface NeedsManager {
+    void setEntityManager(EntityManager manager);
 }

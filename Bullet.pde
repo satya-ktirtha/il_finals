@@ -1,4 +1,4 @@
-public class Bullet extends NonPlayer {
+public class Bullet extends NonPlayer implements NeedsManager {
 
     private final float WIDTH, HEIGHT;
     private PVector velocity, acceleration; 

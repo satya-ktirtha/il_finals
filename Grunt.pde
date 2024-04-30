@@ -47,13 +47,6 @@ public class Grunt extends Enemy {
         if(this.isBoss) {
             
             if(this.fullyScanned) {
-                //arduinoPort.write("e," + str(100));
-             
-                //if(arduinoPort.available() > 0) {
-                //    char deviceDone = arduinoPort.lastChar();
-                //    if(deviceDone == '1')
-                //        this.identified = true;
-                //}
                 this.identified = true;
                 return;
             }
@@ -65,16 +58,11 @@ public class Grunt extends Enemy {
                 
                 if(scanProgress >= 100.0f)
                     this.fullyScanned = true;
-                
-                //arduinoPort.write("e," + str(scanProgress));
-                //arduinoPort.write("scanning\n");
             } else {
                 if(scanProgress > 0)
                     scanProgress -= 1.0f;
             }
         }
-        
-        //println(scanProgress);
     }
     
     @Override
@@ -90,13 +78,13 @@ public class Grunt extends Enemy {
         getState().animate();
         
         if(isBoss)
-            scale(5);
+            scale(5 * getScaleMultiplier());
         else
-            scale(2);
+            scale(2 * getScaleMultiplier());
             
         if(isBoss()) {
             if(!identified)
-                tint(255, 255, 255, 20);
+                tint(255, 255, 255, 150);
             else
                 tint(255, 255, 255, 255);
         } else

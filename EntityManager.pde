@@ -9,6 +9,24 @@ class EntityManager {
         this.player = null;
     }
     
+    public void endGame() {
+        this.player = null;
+        this.cursor = null;
+        
+        this.game.endGame();
+    }
+    
+    public void multEnemySpeed(float mult) {
+        for(Entity entity : this.game.getEntities())
+            if(entity instanceof Enemy)
+                ((Enemy) entity).multSpeed(mult);
+    }
+    
+    public void scaleEnemies(float mult) {
+        for(Enemy enemy : getEnemies()) 
+            enemy.setScaleMultiplier(mult);
+    }
+    
     public void onWeaponPickup(Weapon weapon) {
         this.game.removeEntity(weapon);
     }
@@ -43,6 +61,7 @@ class EntityManager {
             }
             
             this.player = (Player) obj;
+            this.player.setEntityManager(this);
             this.game.addForegroundRenderable((Renderable) obj);
             
             return this.player;
@@ -65,13 +84,12 @@ class EntityManager {
                 ((NonPlayer) obj).setPlayer(this.player);
             }
             
-            if(obj instanceof Weapon) {
-                ((Weapon) obj).setEntityManager(this);
-            }      
+            if(obj instanceof NeedsManager) {
+                ((NeedsManager) obj).setEntityManager(this);
+            }
                    
             if(obj instanceof Enemy) {
                 ((Enemy) obj).setCursor(cursor);
-                ((Enemy) obj).setEntityManager(this);
             }
             
             if(obj instanceof Cursor) {
