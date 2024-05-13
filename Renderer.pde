@@ -9,9 +9,9 @@ public class Renderer {
         //if(obj instanceof Player) {
         //    ((Player) obj).getHitbox().render();
         //}
-        if(obj instanceof Enemy) {
-            ((Enemy) obj).getHitbox().render();
-        }
+        //if(obj instanceof Enemy) {
+        //    ((Enemy) obj).getHitbox().render();
+        //}
         //if(obj instanceof Weapon) {
         //    ((Weapon) obj).getHitbox().render();
         //}

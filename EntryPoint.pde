@@ -68,7 +68,7 @@ public class Game {
         if(arduinoPort.available() > 0) {
             String reading = arduinoPort.readStringUntil('\n');
 
-            if(reading != null) {
+            if(reading != null) {    
                 String[] converted = reading.split(",");
 
                 if(converted[0].equals("S")) {
